@@ -1,7 +1,13 @@
+'''
+Script for one time run.
+Generates NPZs for Win
+benign PE files
+'''
 import numpy as np
 
 RESUME_FROM = 0
 WRITE_THRESH = 5000
+
 
 def numpyfy_benign_ingest(ext='exe'):
     data_list = []
@@ -10,7 +16,7 @@ def numpyfy_benign_ingest(ext='exe'):
     for idx, fname in enumerate(fname_list[RESUME_FROM:], start=RESUME_FROM+1):
         try:
             with open(fname, 'rb') as bfile:
-                data_list.append(np.array(list(bfile.read())))
+                data_list.append(np.array(list(bfile.read()), dtype='uint8'))
                 f_list.append(fname.__str__())
             if ((idx % WRITE_THRESH) == 0) or (idx == fname_list.__len__()):
                 dat_np = np.array(data_list)
@@ -19,9 +25,11 @@ def numpyfy_benign_ingest(ext='exe'):
                 data_list = []
                 f_list = []
                 print(idx)
-        except Exception:
+        except PermissionError:
             pass
+
 
 if __name__ == "__main__":
     numpyfy_benign_ingest('exe')
+    print('-'*80)
     numpyfy_benign_ingest('dll')
